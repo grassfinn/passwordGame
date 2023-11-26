@@ -1,9 +1,9 @@
 {
+
   "dependencies": {
+    "@babel/core": "^7.23.3",
     "jsdom": "^22.1.0"
   },
-  "name": "password-game",
-  "quokka": {
-    "babel": true
-  }
+  "name": "password-game"
 }
+

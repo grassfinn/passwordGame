@@ -1,3 +1,4 @@
+import {game, ui } from "./utils/utils.js";
 // 97 - 122
 
 // Todo
@@ -5,100 +6,7 @@
 // add the intervals
 // when the letter is === to the password element set the element to the correct element and stop the interval for that letter
 // clean up code
-const game = {
-  start: false,
-  gameOver: false,
-  cracked: false,
-  password: 'start',
-  points: 0,
-  time: 5,
-  // methods
-  randomLetter: function (ascii = 97) {
-    const randomLetter = Math.floor(Math.random() * 26) + ascii;
-    let char = String.fromCharCode(randomLetter);
-    return char;
-  },
-  createPassword: function (length) {
-    function startIntervals() {
-      const passwordElement = document.getElementById('password');
-      console.log(passwordElement);
-      const letterElements =
-        passwordElement.getElementsByClassName('password-letter');
-      console.log(letterElements);
 
-      // Create an array to store the intervals for each letter
-      const intervals = [];
-
-      // Start an interval for each letter element
-      for (let i = 0; i < letterElements.length; i++) {
-        // Use a random interval between 500ms and 2000ms (0.5s and 2s)
-
-        const intervalDelay = Math.floor(Math.random() * 100) + 300;
-        intervals.push(
-          setInterval(function () {
-            changeLetter(letterElements[i]);
-            checkLetter(letterElements[i]);
-          }, intervalDelay)
-        );
-      }
-    }
-    const password = [];
-    while (length > 0) {
-      password.push(game.randomLetter());
-      length--;
-    }
-    console.log(password);
-    startIntervals();
-    return password;
-  },
-};
-
-const ui = {
-  timerElement: document.querySelector('#timer'),
-  passwordElement: document.getElementById('password'),
-  passwordInputElement: document.getElementById('password-input'),
-  checkPasswordButton: document.getElementById('test'),
-  userInput: document.getElementById('user-input'),
-  // Methods
-  createElements: function () {
-    const passwordElement = document.getElementById('password');
-    let passwordLetters = game.password.split('');
-
-    passwordElement.style.visibility = 'visible';
-    passwordLetters.map((letter, index) => {
-      const span = document.createElement('span');
-      document.querySelector('#password').append(span);
-      span.className = 'password-letter';
-      span.id = index;
-      span.textContent = letter;
-    });
-  },
-  createInputs: function (string) {
-    const arr = string.split('');
-    arr.map((char, index) => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = `${index}`;
-      input.className = 'password-input';
-      input.maxLength = 1;
-      ui.passwordInputElement.appendChild(input);
-      input.value = '_';
-      // addEventlistener
-      const inputs = Array.from(
-        document.getElementsByClassName('password-input')
-      );
-      inputs.forEach((input, index) => {
-        input.addEventListener('keypress', checkInput);
-      });
-      return arr;
-    });
-  },
-  removeInputs: function (arr) {
-    arr.forEach((item) => {
-      item.remove();
-    });
-  },
-};
 
 ui.createInputs(game.password);
 
@@ -159,66 +67,7 @@ function update(gameObj) {
   }, 1000);
 }
 
-function checkLetter(letterIndex) {
-  if (letterIndex.textContent === game.password[letterIndex.id]) {
-    letterIndex.style.color = 'green';
-    return;
-  }
-  letterIndex.style.color = 'black';
-}
 
-function checkInput(input) {
-  const index = +input.target.id;
-  let userInput = input.target;
-  userInput.value = input.key;
-  let nextInputIndex = index + 1;
-  const inputs = document.querySelectorAll(`.password-input`);
-  let currentInputColor = document.getElementById(index).style.color;
-  if (userInput.value === 'enter') return;
-
-  if (userInput.value === game.password[index]) {
-    input.target.style.borderColor = 'green';
-    console.log('correct');
-    console.log(game.password)
-    // console.log(document.getElementById(index));
-    currentInputColor = 'green';
-    checkPassword()
-    if (nextInputIndex > inputs.length - 1) {
-      nextInputIndex = 0;
-    }
-    inputs[nextInputIndex].focus();
-    return true ;
-  }
-  input.target.style.borderColor = 'red';
-  currentInputColor = 'red';
-  checkPassword()
-  return false;
-}
-
-function checkPassword() {
-  const userInput = document.querySelectorAll('input');
-  const passwordArr = Array.from(userInput);
-  let password = [];
-  passwordArr.map((item) => {
-    password.push(item.value);
-    return;
-  });
-  password = password.join('');
-  if (password === game.password) {
-    game.cracked = true;
-    game.time += 5;
-    ui.timerElement.textContent = game.time
-    console.log(game.time)
-    game.password = game.createPassword(7).join('');
-    game.cracked = false;
-    ui.removeInputs(document.querySelectorAll('.password-input'));
-    ui.createInputs(game.password);
-    userInput.value = '';
-    // countDown();
-    return;
-  }
-  // game.time -= 5;
-}
 
 function countDown() {
   if (typeof game.time === 'number' && game.time > 0) {
@@ -230,20 +79,6 @@ function countDown() {
 }
 
 // setInterval(countDown, 1000);
-
-function changeLetter(letterElement) {
-  const randomLetter = Math.floor(Math.random() * 26) + 97;
-  let char = String.fromCharCode(randomLetter);
-
-  letterElement.textContent = char;
-}
-
-function handlePress(e) {
-  if (e.key === 'Enter') {
-    checkPassword();
-    return;
-  }
-}
 
 ui.createElements();
 // need to add interval after creation
